@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CreatorDock Documentary Suite</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #cbd5e1 !important; color: black !important; font-size: 11px !important; padding: 6px !important; }
+        }
+        @media (max-width: 768px) {
+            header.sticky {
+                padding-top: max(env(safe-area-inset-top), 3.5rem) !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- TOP TOOLBAR -->
+    <header class="no-print sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b border-slate-800 px-4 py-3 shadow-lg">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <img src="https://creatordock.online/wp-content/uploads/2026/10/Logo-transparan-creatordock-putih.png" alt="CreatorDock Logo" class="h-7 w-auto object-contain">
+                <div class="border-l border-slate-700 pl-3">
+                    <h1 class="text-xs font-bold tracking-wider text-white uppercase">CreatorDock Suite</h1>
+                    <p class="text-[10px] text-slate-400">International Broadcast Documentary Generator</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="document.getElementById('fileInput').click()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1.5 border border-slate-700 shadow-sm">
+                    <i data-lucide="folder-open" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    <span>Buka (.json)</span>
+                </button>
+                <input type="file" id="fileInput" accept=".json" class="hidden" onchange="importJSON(event)">
+
+                <button onclick="saveJSON()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1.5 shadow-sm">
+                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                    <span>Simpan</span>
+                </button>
+
+                <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1.5 border border-slate-700 shadow-sm">
+                    <i data-lucide="printer" class="w-3.5 h-3.5 text-emerald-400"></i>
+                    <span>Cetak PDF</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 space-y-6">
+        
+        <!-- INPUT GENERATOR CARD -->
+        <div class="no-print bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+            <div>
+                <h2 class="text-base font-bold text-white flex items-center space-x-2">
+                    <i data-lucide="wand-2" class="w-4 h-4 text-indigo-400"></i>
+                    <span>Broadcast Executive Producer Generator</span>
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">Masukkan tema besar dokumenter dan alokasi hari kerja. Sistem akan menyusun draf jadwal, RAB, dan naskah secara instan.</p>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Tema Besar / Premis Cerita</label>
+                    <textarea id="themeInput" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 transition" placeholder="Contoh: Perjuangan perajin gula aren tradisional di perbukitan Sulawesi menghadapi modernisasi..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Pra-Produksi (Hari)</label>
+                        <input type="number" id="inputPreDays" min="1" max="5" value="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Produksi / Syuting (Hari)</label>
+                        <input type="number" id="inputProdDays" min="1" max="10" value="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Pasca-Produksi (Hari)</label>
+                        <input type="number" id="inputPostDays" min="1" max="5" value="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+                
+                <div class="flex justify-end pt-2">
+                    <button onclick="generatePackage()" id="generateBtn" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition flex items-center space-x-2 shadow-lg">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                        <span>Generate Paket Produksi Otomatis</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RENDER CONTAINER -->
+        <div id="appContainer" class="space-y-6"></div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="no-print border-t border-slate-900 bg-slate-950 py-4 px-6 text-center text-xs text-slate-500">
+        CreatorDock Documentary Suite &copy; 2026. Standar Siaran Internasional.
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        lucide.createIcons();
+
+        let currentData = {
+            title: "Menjaga Warisan Hitam Manis",
+            logline: "Perjuangan perajin enau tradisional di pedalaman Sulawesi mempertahankan metode leluhur.",
+            preDays: 3,
+            prodDays: 6,
+            postDays: 3,
+            schedule: [
+                { phase: "PRA-PRODUKSI", day: "Hari 1", agenda: "Finalisasi Treatment & Draft Naskah Awal (3-Act Structure)", output: "Sinopsis & AV Script 2-Kolom" },
+                { phase: "PRA-PRODUKSI", day: "Hari 2", agenda: "Location Scouting & Perizinan Resmi", output: "Survei visual & izin narasumber" },
+                { phase: "PRA-PRODUKSI", day: "Hari 3", agenda: "Briefing Kru, Gear Check, & Shot List", output: "Uji coba Mirrorless, Audio & Drone" },
+                { phase: "PRODUKSI", day: "Hari 4", agenda: "Syuting Act 1: Setup & Wawancara Kunci", output: "Raw Footage & Field Log (Roll A001)" },
+                { phase: "PRODUKSI", day: "Hari 5", agenda: "Syuting Aktivitas Harian Subjek (B-Roll)", output: "Lembar log harian & backup data" },
+                { phase: "PRODUKSI", day: "Hari 6", agenda: "Eksplorasi Investigasi & Hambatan", output: "Visual pendukung & SOT tambahan" },
+                { phase: "PRODUKSI", day: "Hari 7", agenda: "Pengambilan Gambar Detail & Insert", output: "Material B-Roll pelengkap transisi" },
+                { phase: "PRODUKSI", day: "Hari 8", agenda: "Syuting Act 3: Resolusi & Klimaks", output: "Rangkaian akhir adegan kunci" },
+                { phase: "PRODUKSI", day: "Hari 9", agenda: "Pick-up Shoot & Wrap Up Lapangan", output: "Penyelesaian materi & data check" },
+                { phase: "PASCA-PRODUKSI", day: "Hari 10", agenda: "Ingest, Transkripsi, & Paper Edit", output: "Assembly Cut di Adobe Premiere" },
+                { phase: "PASCA-PRODUKSI", day: "Hari 11", agenda: "Fine Cut, Color Grading, & Sound Design", output: "Matching color & pembersihan audio" },
+                { phase: "PASCA-PRODUKSI", day: "Hari 12", agenda: "Audio Mixing (-24 LUFS), Mastering, & QC", output: "Broadcast Ready Deliverables" }
+            ],
+            budget: [
+                { category: "PRA-PRODUKSI", item: "Riset Ide & Penulisan Naskah", qty: "1 Paket", cost: 15000000 },
+                { category: "PRA-PRODUKSI", item: "Location Scouting & Perizinan", qty: "1 Paket", cost: 7500000 },
+                { category: "PRODUKSI", item: "Honor Sutradara & Kamerawan (6 Hari)", qty: "2 Orang", cost: 24000000 },
+                { category: "PRODUKSI", item: "Sewa Kamera Mirrorless & Drone (6 Hari)", qty: "1 Paket", cost: 12000000 },
+                { category: "PRODUKSI", item: "Transportasi Lokal & BBM Lapangan", qty: "6 Hari", cost: 6000000 },
+                { category: "PRODUKSI", item: "Konsumsi Kru & Narasumber", qty: "6 Hari", cost: 4500000 },
+                { category: "PASCA-PRODUKSI", item: "Video Editor & Color Grading", qty: "1 Paket", cost: 15000000 },
+                { category: "PASCA-PRODUKSI", item: "Sound Designer & Audio Mixing (-24 LUFS)", qty: "1 Paket", cost: 7500000 }
+            ],
+            acts: [
+                {
+                    actName: "ACT 1: SETUP & HOOK (00:00 - 05:00)",
+                    scenes: [
+                        { status: "READY", visual: "WS / Aerial Drone: Lanskap perbukitan diselimuti kabut pagi. Slow Pan menyorot pohon enau.", audio: "VO: 'Di balik lebatnya kabut perbukitan Sulawesi, ada manis yang dipertaruhkan...' BGM: Musik etnik." },
+                        { status: "IN_PROGRESS", visual: "MCU / Tracking: Pak Maman (52) menyiapkan golok dan bumbung penampung nira di teras rumah.", audio: "SOT Pak Maman: 'Memanjat pohon aren bukan cuma soal cari uang, tapi menjaga warisan tetua.'" }
+                    ]
+                }
+            ]
+        };
+
+        function renderApp() {
+            const container = document.getElementById('appContainer');
+            let totalBudget = currentData.budget.reduce((sum, item) => sum + item.cost, 0);
+
+            let html = `
+                <!-- METADATA CARD -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Judul Proyek / Working Title</label>
+                            <input type="text" id="projectTitle" value="${currentData.title}" oninput="updateMeta()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Logline / Premis Cerita</label>
+                            <input type="text" id="projectLogline" value="${currentData.logline}" oninput="updateMeta()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION: PRODUCTION SCHEDULE -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+                    <h3 class="text-sm font-bold text-white flex items-center space-x-2 border-b border-slate-800 pb-3">
+                        <i data-lucide="calendar" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Rencana Jadwal Produksi (${currentData.preDays + currentData.prodDays + currentData.postDays} Hari Kerja)</span>
+                    </h3>
+                    <div class="overflow-x-auto border border-slate-800 rounded-xl">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-800 bg-slate-950/70 text-slate-400">
+                                    <th class="p-3 w-28 text-center">Fase</th>
+                                    <th class="p-3 w-24 text-center">Hari</th>
+                                    <th class="p-3 w-1/2">Agenda Kerja</th>
+                                    <th class="p-3">Output / Deliverables</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60">
+            `;
+
+            currentData.schedule.forEach(item => {
+                let badge = item.phase === 'PRA-PRODUKSI' ? 'text-amber-400 bg-amber-950/40 border-amber-900/50' : item.phase === 'PRODUKSI' ? 'text-emerald-400 bg-emerald-950/40 border-emerald-900/50' : 'text-indigo-400 bg-indigo-950/40 border-indigo-900/50';
+                html += `
+                    <tr class="hover:bg-slate-900/40 transition">
+                        <td class="p-3 text-center"><span class="text-[10px] font-semibold px-2 py-1 rounded-lg border ${badge}">${item.phase}</span></td>
+                        <td class="p-3 text-center font-mono text-slate-300 font-semibold">${item.day}</td>
+                        <td class="p-3 text-slate-200">${item.agenda}</td>
+                        <td class="p-3 text-slate-300">${item.output}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SECTION: BUDGET ESTIMATION (RAB) -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                            <i data-lucide="dollar-sign" class="w-4 h-4 text-amber-400"></i>
+                            <span>Rencana Anggaran Biaya (RAB) Produksi</span>
+                        </h3>
+                        <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-900/50 px-3 py-1 rounded-xl">Total: Rp ${totalBudget.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="overflow-x-auto border border-slate-800 rounded-xl">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-800 bg-slate-950/70 text-slate-400">
+                                    <th class="p-3 w-32 text-center">Fase</th>
+                                    <th class="p-3">Jenis Kegiatan / Kebutuhan Item</th>
+                                    <th class="p-3 w-28 text-center">Jumlah</th>
+                                    <th class="p-3 w-36 text-right">Estimasi Biaya (Rp)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60">
+            `;
+
+            currentData.budget.forEach((b, bIdx) => {
+                html += `
+                    <tr class="hover:bg-slate-900/40 transition">
+                        <td class="p-3 text-center text-slate-400 font-mono text-[11px]">${b.category}</td>
+                        <td class="p-3 text-slate-200">${b.item}</td>
+                        <td class="p-3 text-center text-slate-300">${b.qty}</td>
+                        <td class="p-3 text-right font-mono text-emerald-300">Rp ${b.cost.toLocaleString('id-ID')}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SECTION: DOCUSCRIPT EDITOR -->
+            `;
+
+            currentData.acts.forEach((act, actIndex) => {
+                html += `
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-bold text-indigo-300 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-xl">${act.actName}</h3>
+                            <button onclick="addScene(${actIndex})" class="no-print text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded-lg transition">+ Scene Baru</button>
+                        </div>
+                        <div class="overflow-x-auto border border-slate-800 rounded-xl">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-800 bg-slate-950/70 text-slate-400">
+                                        <th class="p-3 w-16 text-center">Status</th>
+                                        <th class="p-3 w-16 text-center">Scene</th>
+                                        <th class="p-3 w-1/2">Visual (Kamera / Shot / Poin)</th>
+                                        <th class="p-3">Audio (VO / SOT / BGM / SFX)</th>
+                                        <th class="no-print p-3 w-12 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/60">
+                `;
+
+                act.scenes.forEach((scene, sceneIndex) => {
+                    let dot = scene.status === 'READY' ? 'bg-emerald-500' : scene.status === 'IN_PROGRESS' ? 'bg-amber-500' : 'bg-blue-500';
+                    html += `
+                        <tr class="hover:bg-slate-900/40 transition">
+                            <td class="p-3 text-center">
+                                <button onclick="toggleStatus(${actIndex}, ${sceneIndex})" class="w-3.5 h-3.5 rounded-full ${dot} inline-block shadow-sm transition transform hover:scale-125" title="Klik ganti status"></button>
+                            </td>
+                            <td class="p-3 text-center font-mono text-indigo-400 font-semibold">0${sceneIndex + 1}</td>
+                            <td class="p-3">
+                                <textarea rows="2" oninput="updateScene(${actIndex}, ${sceneIndex}, 'visual', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded p-2 text-slate-200 text-xs focus:outline-none focus:border-indigo-500 resize-y">${scene.visual}</textarea>
+                            </td>
+                            <td class="p-3">
+                                <textarea rows="2" oninput="updateScene(${actIndex}, ${sceneIndex}, 'audio', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded p-2 text-slate-300 text-xs focus:outline-none focus:border-indigo-500 resize-y">${scene.audio}</textarea>
+                            </td>
+                            <td class="no-print p-3 text-center">
+                                <button onclick="deleteScene(${actIndex}, ${sceneIndex})" class="text-slate-500 hover:text-rose-400 transition p-1 rounded">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        function updateMeta() {
+            currentData.title = document.getElementById('projectTitle').value;
+            currentData.logline = document.getElementById('projectLogline').value;
+        }
+
+        function updateScene(actIdx, sceneIdx, field, val) {
+            currentData.acts[actIdx].scenes[sceneIdx][field] = val;
+        }
+
+        function toggleStatus(actIdx, sceneIdx) {
+            let cur = currentData.acts[actIdx].scenes[sceneIdx].status;
+            if (cur === 'READY') currentData.acts[actIdx].scenes[sceneIdx].status = 'IN_PROGRESS';
+            else if (cur === 'IN_PROGRESS') currentData.acts[actIdx].scenes[sceneIdx].status = 'SPECIAL';
+            else currentData.acts[actIdx].scenes[sceneIdx].status = 'READY';
+            renderApp();
+        }
+
+        function addScene(actIdx) {
+            currentData.acts[actIdx].scenes.push({ status: "READY", visual: "Deskripsi visual...", audio: "VO / SOT / BGM..." });
+            renderApp();
+        }
+
+        function deleteScene(actIdx, sceneIdx) {
+            currentData.acts[actIdx].scenes.splice(sceneIdx, 1);
+            renderApp();
+        }
+
+        // FUNGSI GENERATE YANG DISELARASKAN DENGAN BACKEND AKTIF (creatordock.online)
+        async function generatePackage() {
+            const theme = document.getElementById('themeInput').value;
+            if(!theme) return alert('Masukkan tema besar dokumenter terlebih dahulu!');
+
+            const btn = document.getElementById('generateBtn');
+            const originalHTML = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>AI Produser Eksekutif Sedang Bekerja...</span>`;
+            lucide.createIcons();
+
+            const pre = parseInt(document.getElementById('inputPreDays').value) || 3;
+            const prod = parseInt(document.getElementById('inputProdDays').value) || 6;
+            const post = parseInt(document.getElementById('inputPostDays').value) || 3;
+
+            try {
+                const formData = new FormData();
+                formData.append('action', 'generate_documentary_draft'); // Diselaraskan dengan handler functions.php
+                formData.append('tema_besar', theme); // Parameter POST yang ditangkap backend aktif
+
+                // Kirim permintaan AJAX ke WordPress creatordock.online
+                const response = await fetch('https://creatordock.online/wp-admin/admin-ajax.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const resJson = await response.json();
+
+                if (resJson.success) {
+                    currentData.title = theme.substring(0, 45) + "...";
+                    currentData.logline = "AI Output: " + theme;
+                    currentData.preDays = pre;
+                    currentData.prodDays = prod;
+                    currentData.postDays = post;
+
+                    // Regenerasi jadwal harian secara otomatis
+                    let newSchedule = [];
+                    let dayCount = 1;
+                    for(let i=1; i<=pre; i++) newSchedule.push({ phase: "PRA-PRODUKSI", day: `Hari ${dayCount++}`, agenda: `Persiapan & Riset Tahap ${i}`, output: "Dokumen pra-produksi & perizinan" });
+                    for(let i=1; i<=prod; i++) newSchedule.push({ phase: "PRODUKSI", day: `Hari ${dayCount++}`, agenda: `Syuting Lapangan Sesi ${i} (Kamera & Drone)`, output: `Raw footage & Field log harian ${i}` });
+                    for(let i=1; i<=post; i++) newSchedule.push({ phase: "PASCA-PRODUKSI", day: `Hari ${dayCount++}`, agenda: `Penyuntingan & Finishing Sesi ${i}`, output: "Assembly cut / Master siaran" });
+                    
+                    currentData.schedule = newSchedule;
+                    renderApp();
+                    alert('Paket draf naskah, jadwal, dan RAB berhasil digenerate otomatis oleh AI!');
+                } else {
+                    alert('Gagal dari server AI: ' + (resJson.data || 'Kesalahan tidak dikenal.'));
+                }
+            } catch (error) {
+                console.error('AJAX Error:', error);
+                alert('Terjadi kesalahan koneksi ke server WordPress creatordock.online.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                lucide.createIcons();
+            }
+        }
+
+        function saveJSON() {
+            updateMeta();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentData, null, 2));
+            const dl = document.createElement('a');
+            dl.setAttribute("href", dataStr);
+            dl.setAttribute("download", `DocuSuite_${currentData.title.replace(/\s+/g, '_')}.json`);
+            document.body.appendChild(dl);
+            dl.click();
+            dl.remove();
+        }
+
+        function importJSON(event) {
+            const reader = new FileReader();
+            if(event.target.files[0]) {
+                reader.readAsText(event.target.files[0], "UTF-8");
+                reader.onload = (e) => {
+                    try {
+                        const parsed = JSON.parse(e.target.result);
+                        if(parsed && parsed.acts) {
+                            currentData = parsed;
+                            renderApp();
+                            alert('Data proyek berhasil dimuat!');
+                        } else {
+                            alert('Format file tidak valid.');
+                        }
+                    } catch(err) {
+                        alert('Gagal membaca file JSON.');
+                    }
+                }
+            }
+        }
+
+        renderApp();
+    </script>
+</body>
+</html>
